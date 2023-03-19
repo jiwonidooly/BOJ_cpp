@@ -17,11 +17,10 @@ int main(void){
 
 cin>>n>>m; // 입출력 받기
 // 배열 입출력 트릭
-for (int i = 0; i < n; i++) {
-		for (int j = 0; j < m; j++) {
+for (int i = 0; i < n; i++) 
+		for (int j = 0; j < m; j++)
 			cin>> board[i][j];
-		}
-	}
+	
 
     int mx=0; // 그림 넓이 최대
     int num=0; // 그림의 개수
@@ -36,9 +35,10 @@ for(int i=0; i<n;i++){
     Q.push({i,j}); // 큐에 시작점인 (i,j)을 삽입
     int area=0;
     while(!Q.empty()){
-        pair<int, int> cur =Q.front(); Q.pop(); area++;// 프론트 확인하고 빼라
+        area++;
+        pair<int, int> cur =Q.front(); Q.pop(); // 프론트 확인하고 빼라
         // pop의 횟수가 그림의 크기다.
-        cout<<'('<<cur.X<<", "<<cur.Y<<") -> ";
+        
         for(int dir=0; dir<4; dir++){ // 상하좌우 칸 살펴본다.
         int nx = cur.X+dx[dir];
         int ny=cur.Y+dy[dir]; // nx, ny에 dir에서 정한 방향의 인접한 칸의 좌표가 들어감
@@ -46,11 +46,7 @@ for(int i=0; i<n;i++){
            if(vis[nx][ny]||board[nx][ny]!=1) continue; // 이미 방문한 칸이거나 파란 칸이 아닐 경우
            vis[nx][ny]=1; // (nx, ny)를 방문했다고 명시
            Q.push({nx, ny});
-           mx+=1;//큐 푸시할 때마다 그림 넓이 키우기
-
-        //큐가 비워지면 그림 개수 늘리기
-           if(Q.empty()){
-            num+=1;
+          
            }
         }
         mx=max(mx, area);
