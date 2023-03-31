@@ -1,56 +1,54 @@
 #include <iostream>
 #include <queue>
 #include <algorithm>
+
 using namespace std;
 #define X first
 #define Y second
+int board[502][502];
+bool vis[502][502];
 
-int board[502][502]; // 1이 파란 칸, 0이 빨간 칸에 대응
-bool vis[502][502]; // 해당 칸을 방문했는지 여부를 저장
-int n, m; // n=행의 수, m=열의 수
-int dx[4]={1,0,-1,0};
-int dy[4]={0,1,0,-1}; // 상하좌우 네 방향을 의미
+int n, m;
+int dx[4] = { 1,0,-1,0 };
+int dy[4] = { 0,1,0,-1 };
 
-int main(void){
-    ios::sync_with_stdio(0);
-    cin.tie(0);
-
-cin>>n>>m; // 입출력 받기
-// 배열 입출력 트릭
-for (int i = 0; i < n; i++) 
-		for (int j = 0; j < m; j++)
-			cin>> board[i][j];
+int main(void) {
+	ios::sync_with_stdio(0);
+	cin.tie(0);
+  cin >> n >> m;
+  for(int i = 0; i < n; i++)
+    for(int j = 0; j < m; j++)
+      cin >> board[i][j];
+    
+	int num = 0; // 그림의 수
+	int mx = 0; // 그림의 최댓값
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < m; j++) {
+			if (vis[i][j] || board[i][j] == 0) continue;
+				
+				num++; // 그림 수 늘어나고
+				queue<pair<int, int>> Q; // pair<int,int>를 자료형으로 갖는 큐 선언
+				vis[i][j] = 1; // 시작점 표시
+                Q.push({ i,j });
+                int area = 0; // 넓이는 0부터 시작하고
+				while (!Q.empty()) {
+                    area++;
+					pair<int, int> cur = Q.front(); Q.pop();
+					 // pop하는 것만큼 - push로 하면 저 위에서 push한게 있어서 문제가 생김
+					for (int dir = 0; dir < 4; dir++) {
+						int nx = cur.X + dx[dir];
+						int ny = cur.Y + dy[dir];
+						if (nx < 0 || nx >= n || ny < 0 || ny >= m) continue;
+						if (vis[nx][ny] || board[nx][ny] != 1) continue;
+						vis[nx][ny] = 1;
+						Q.push({nx, ny});
 	
-
-    int mx=0; // 그림 넓이 최대
-    int num=0; // 그림의 개수
-
-// 이중 포문으로 시작점이 될 수 있는지 보자.
-for(int i=0; i<n;i++){
-    for(int j=0; j<m; j++){
-    if(board[i][j]==0 || vis[i][j]) continue; // 방문했거나 빨간칸이면 시작점이 될 수 없다.
-    num++;
-    queue<pair<int, int>> Q;
-    vis[i][j]=1; // (i,j)을 방문했다고 명시
-    Q.push({i,j}); // 큐에 시작점인 (i,j)을 삽입
-    int area=0;
-    while(!Q.empty()){
-        area++;
-        pair<int, int> cur =Q.front(); Q.pop(); // 프론트 확인하고 빼라
-        // pop의 횟수가 그림의 크기다.
-        
-        for(int dir=0; dir<4; dir++){ // 상하좌우 칸 살펴본다.
-        int nx = cur.X+dx[dir];
-        int ny=cur.Y+dy[dir]; // nx, ny에 dir에서 정한 방향의 인접한 칸의 좌표가 들어감
-           if(nx<0 || nx>=n || ny<0 || ny>=m) continue; // 범위 밖일 경우 넘어감
-           if(vis[nx][ny]||board[nx][ny]!=1) continue; // 이미 방문한 칸이거나 파란 칸이 아닐 경우
-           vis[nx][ny]=1; // (nx, ny)를 방문했다고 명시
-           Q.push({nx, ny});
-          
-           }
-        }
-        mx=max(mx, area);
-    }
-}
-cout<<num<<'\n'<<mx;
+					}
+				}
+				mx = max(area, mx);
+		}
+	}
+		
+	cout<<num<<'\n'<<mx;
+	
 }
