@@ -1,5 +1,3 @@
-// 모든 시작점을 큐에 넣고 BFS를 돌려
-// 정수 1은 익은 토마토, 정수 0 은 익지 않은 토마토, 정수 -1은 토마토가 들어있지 않은 칸을 나타낸다.
 #include <iostream>
 #include <queue>
 
@@ -7,50 +5,77 @@ using namespace std;
 #define X first
 #define Y second
 
-int board[1002][1002];
-int dist[1002][1002]; // 거리의 배열 dist
 int n,m;
 int dx[4]={1,0,-1,0};
 int dy[4]={0,1,0,-1};
+
+int board[1002][1002];
+int day[1002][1002]; // 언제 방문했는지 나타냄 //bfs 돌리며 이걸로 채움.
+ 
+
 int main(void){
-    ios::sync_with_stdio(0);
-    cin.tie(0);
+
+ios::sync_with_stdio(0);
+cin.tie(0);
+
     cin>>m>>n;
-    queue<pair<int, int> > Q;
+    // m이 가로, n이 세로
+
     for(int i=0; i<n; i++){
         for(int j=0; j<m; j++){
             cin>>board[i][j];
-            if(board[i][j]==1) // 익은 토마토=>시작점
-            Q.push({i,j}); // 시작점이 여러 개면 시작점을 다 넣어준다.
-            if(board[i][j]==0) // 토마토가 있는데 익지 않은 곳은 board[i][j]=0으로 해준다.
-            dist[i][j]=-1; // 익지 않은 곳은 dist[i][j]=-1로 해준다.
+        }
+    }
+    
+    
+    // m이 가로, n이 세로
+    for(int i=0; i<n; i++){
+        for(int j=0; j<m; j++){
+            day[i][j]=-1;
+        }
+    }
+    queue<pair<int, int>> Q;
+
+    // 토마토 시작점 표시
+    for(int i=0; i<n; i++){
+        for(int j=0; j<m; j++){
+            if(board[i][j]==1){
+            Q.push({i,j});
+            day[i][j]=0; // 시작점이니 익는데 0일 걸림
+            } // 중괄호 조심!!!!!!!!!!!
         }
     }
 
     while(!Q.empty()){
-        auto cur = Q.front(); Q.pop();
+        auto cur=Q.front(); Q.pop();
         for(int dir=0; dir<4; dir++){
             int nx=cur.X+dx[dir];
             int ny=cur.Y+dy[dir];
-            if(nx<0 || nx>=n || ny<0 || ny>=m )continue; // 범위 초과
-            if(dist[nx][ny]>=0) continue; // 이 부분) 이미 익은 곳은 내친다.
-            dist[nx][ny]=dist[cur.X][cur.Y]+1; // 사방 탐색 후 익지 않은 것 -1에다가 +1해준다.
+            //범위 초과 시,
+            if(nx<0 || nx>=n || ny<0 || ny>=m) continue;
+        //토마토가 없거나 이미 익은 곳이면
+           if(board[nx][ny] == -1 || day[nx][ny]!=-1) continue;
+            day[nx][ny]=day[cur.X][cur.Y]+1;
             Q.push({nx,ny});
-        }
-        }
 
-        int ans=0;
-        for(int i=0; i<n; i++){
-            for(int j=0; j<m; j++){
-                if(dist[i][j]==-1){ // 하나라도 -1이면 다 익지 못했다는 것이다.
-                    cout<<-1;
-                    return 0; // 그러면 -1을 출력해주고 종료 해준다.
-                }
-                ans=max(ans, dist[i][j]);
-            }
         }
-        cout<<ans;
     }
-    // 바킹독님께 dist[nx][ny]>=0 이면 continue 하는 이유 물어보고
-    // 이미 익은 곳은 탐색 및 push 불필요여서>>
-    // 디버깅 통해서 
+
+int mx=0;
+    // day에서 -1이 발견되면 -1을 출력하고 return 종료
+    // 아니면 max 값 찾기
+    for(int i=0; i<n; i++){
+        for(int j=0; j<m; j++){
+            if(day[i][j]==-1 && board[i][j]!=-1){
+            //정말로 없어서 -1 된 경우는 제외해준다.
+                cout<<-1;
+                return 0;
+            }
+            mx=max(mx, day[i][j]);
+        }
+    }
+    
+    cout<<mx;
+
+
+}
